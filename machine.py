@@ -2,7 +2,7 @@ from tensorflow.keras.layers import*
 from tensorflow.keras.optimizers import *
 from tensorflow.keras.regularizers import *
 from tensorflow.keras.models import Model, load_model
-from numpy import reshape
+from numpy import array, reshape
 
 class Machine():
     
@@ -31,17 +31,16 @@ class Machine():
         return self.nnet.predict(data)
     
     def d(self, data):
-        slopes = [0] * len(data)
+        gradients = [[0] * len(data) for _ in range(self.nnet.input_shape[1])]
         W = self.nnet.get_weights()
-        W1, B, W2 = W[0], W[1], W[2]
-        W1 = W1[0]
-        W2 = reshape(W2, (len(W2),))
-        W = W1*W2
-        for i in range(len(slopes)):
-            for j in range(len(W1)):
-                if W1[j] * data[i] > -B[j]:
-                    slopes[i] += W[j]
-        return slopes
+        W1, B, W2= W[0], W[1], W[2]
+        H = array(data)*W1
+        for i in range(len(gradients)):
+            for j in range(len(H)):
+                for k in range(len(H[j])):
+                    if H[j][k] > -B[k]:
+                        gradients[i][j] += W1[i][k] * W2[k][0]
+        return gradients
     
     def save(self, name):
         self.nnet.save(name + ".h5")

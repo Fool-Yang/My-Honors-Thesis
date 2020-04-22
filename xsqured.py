@@ -9,7 +9,7 @@ matplotlib.rc('font', **font)
 from machine import Machine
 
 # y = x^2
-M = Machine((1), nodes = 4096, lr = 0.01)
+M = Machine((1), nodes = 4096, lr = 0.02)
 X = [1, 2, 3, 4, 5, 6, 7, 20, 21, 22, 23, 24, 25, 26]
 Y = [x**2 for x in X]
 M.learn(X, Y, 2048)
@@ -27,8 +27,9 @@ ax.plot(X_test, Y_t, label = "actrual")
 ax.plot(X, Y, 'o', label = "sample")
 plt.legend(loc='best')
 
-X = list(range(1, 27))
-dx = M.d(X)
+#M = Machine(model = 'x^2')
+X = [[x] for x in range(1, 27)]
+dx = M.d(X)[0]
 Mdx = Machine((1), nodes = 512, lr = 0.04)
 Mdx.learn(X, dx, 512)
 Mdx.save("2x")
@@ -44,7 +45,7 @@ ax.plot(X_test, Y_test, label = "prediction")
 ax.plot(X_test, Y_t, label = "actrual")
 plt.legend(loc='best')
 
-dxx = Mdx.d(X)
+dxx = Mdx.d(X)[0]
 Mdxx = Machine((1), nodes = 512, lr = 0.04)
 Mdxx.learn(X, dxx, 512)
 Mdxx.save("2")
@@ -60,7 +61,7 @@ ax.plot(X_test, Y_test, label = "prediction")
 ax.plot(X_test, Y_t, label = "actrual")
 plt.legend(loc='best')
 
-dxxx = Mdxx.d(X)
+dxxx = Mdxx.d(X)[0]
 Mdxxx = Machine((1), nodes = 512, lr = 0.04)
 Mdxxx.learn(X, dxxx, 512)
 Mdxxx.save("0")
@@ -77,5 +78,5 @@ ax.plot(X_test, Y_t, label = "actrual")
 plt.legend(loc='best')
 plt.show()
 
-X0 = list(range(3, 3 + 5))
-print(M.v(X0), M.d(X0), Mdx.d(X0), Mdxx.d(X0))
+X0 = [[x] for x in range(3, 3 + 5)]
+print(M.v(X0), M.d(X0)[0], Mdx.d(X0)[0], Mdxx.d(X0)[0], sep = '\n')
