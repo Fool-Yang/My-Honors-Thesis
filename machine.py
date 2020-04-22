@@ -1,4 +1,4 @@
-from tensorflow.keras.layers import*
+from tensorflow.keras.layers import *
 from tensorflow.keras.optimizers import *
 from tensorflow.keras.regularizers import *
 from tensorflow.keras.models import Model, load_model
@@ -24,7 +24,7 @@ class Machine():
         else:
             raise ValueError("Provide either input shape or model name")
 
-    # tran
+    # train
     def learn(self, X, Y, ep = 32, bs = 256):
         self.nnet.fit(X, Y, epochs = ep, batch_size = bs)
 

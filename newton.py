@@ -36,7 +36,7 @@ ax = fig.add_subplot(111, projection='3d')
 surf = ax.plot_surface(X_test, Y_test, Z, label = "prediction")
 surf._facecolors2d=surf._facecolors3d
 surf._edgecolors2d=surf._edgecolors3d
-surf = ax.plot_surface(X_test, Y_test, Z_t, label = "actrual")
+surf = ax.plot_surface(X_test, Y_test, Z_t, label = "actual")
 surf._facecolors2d=surf._facecolors3d
 surf._edgecolors2d=surf._edgecolors3d
 ax.scatter(xs, ys, zs_s, label = "sample", color = "green")
@@ -74,7 +74,7 @@ ax = fig.add_subplot(111, projection='3d')
 surf = ax.plot_surface(X_test, Y_test, Z, label = "prediction")
 surf._facecolors2d=surf._facecolors3d
 surf._edgecolors2d=surf._edgecolors3d
-surf = ax.plot_surface(X_test, Y_test, Z_t, label = "actrual")
+surf = ax.plot_surface(X_test, Y_test, Z_t, label = "actual")
 surf._facecolors2d=surf._facecolors3d
 surf._edgecolors2d=surf._edgecolors3d
 ax.set_title("dF/dm")
@@ -99,7 +99,7 @@ ax = fig.add_subplot(111, projection='3d')
 surf = ax.plot_surface(X_test, Y_test, Z, label = "prediction")
 surf._facecolors2d=surf._facecolors3d
 surf._edgecolors2d=surf._edgecolors3d
-surf = ax.plot_surface(X_test, Y_test, Z_t, label = "actrual")
+surf = ax.plot_surface(X_test, Y_test, Z_t, label = "actual")
 surf._facecolors2d=surf._facecolors3d
 surf._edgecolors2d=surf._edgecolors3d
 ax.set_title("dF/da")
