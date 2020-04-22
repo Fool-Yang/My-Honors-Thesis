@@ -1,82 +1,115 @@
-from numpy import array
-import matplotlib
+import numpy as np
+from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
-font = {'family' : 'DejaVu Sans',
-        'weight' : 'normal',
-        'size'   : 24}
-matplotlib.rc('font', **font)
+import matplotlib
+matplotlib.rcParams['legend.fontsize'] = 20
 
 from laws import newton
 from machine import Machine
 
-# y = x^2
-M = Machine((2), nodes = 4096, lr = 0.01)
-X = [1, 2, 3, 4, 5, 6, 7, 20, 21, 22, 23, 24, 25, 26]
-Y = [x**2 for x in X]
-M.learn(X, Y, 2048)
-M.save("x^2")
-X_test = [1 + 25/1000*x for x in range(1001)]
-Y_test = M.v(X_test)
-Y_t = [x**2 for x in X_test]
+# F = ma
+def F(m, a):
+    return m*a
+
+M = Machine((2), nodes = 2048, lr = 0.002)
+m_a, f = newton()
+xs = np.array([ma[0] for ma in m_a])
+ys = np.array([ma[1] for ma in m_a])
+zs_s = f
+M.learn(m_a, f, 4096)
+M.save("ma")
+
+m = np.arange(5.0, 10.0, 0.05)
+a = np.arange(3.0, 8.0, 0.05)
+X_test, Y_test = np.meshgrid(m, a)
+m_a = np.array(list(zip(np.ravel(X_test), np.ravel(Y_test))))
+
+zs_t = np.array(F(np.ravel(X_test), np.ravel(Y_test)))
+Z_t = zs_t.reshape(X_test.shape)
+
+zs = M.v(m_a)
+Z = zs.reshape(X_test.shape)
+
 # plot
-fig, ax = plt.subplots()
-ax.set_xlabel("x")
-ax.set_ylabel("y")
-ax.set_title("y = x^2")
-ax.plot(X_test, Y_test, label = "prediction")
-ax.plot(X_test, Y_t, label = "actrual")
-ax.plot(X, Y, 'o', label = "sample")
-plt.legend(loc='best')
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+surf = ax.plot_surface(X_test, Y_test, Z, label = "prediction")
+surf._facecolors2d=surf._facecolors3d
+surf._edgecolors2d=surf._edgecolors3d
+surf = ax.plot_surface(X_test, Y_test, Z_t, label = "actrual")
+surf._facecolors2d=surf._facecolors3d
+surf._edgecolors2d=surf._edgecolors3d
+ax.scatter(xs, ys, zs_s, label = "sample", color = "green")
+ax.set_title("F = ma")
+ax.set_xlabel('m')
+ax.set_ylabel('a')
+ax.set_zlabel('F')
+ax.legend()
 
-X = list(range(1, 27))
-dx = M.d(X)
-Mdx = Machine((1), nodes = 512, lr = 0.04)
-Mdx.learn(X, dx, 512)
-Mdx.save("2x")
+def F_m(m, a):
+    return a
 
-Y_test = Mdx.v(X_test)
-Y_t = [2*x for x in X_test]
+def F_a(m, a):
+    return m
+
+xs = np.arange(5.0, 10.0, 0.2)
+ys = np.arange(3.0, 8.0, 0.2)
+X = np.array([(x, y) for x in xs for y in ys])
+
+dm, da = M.d(X)
+
+Mdm = Machine((2), nodes = 1024, lr = 0.00001)
+Mdm.learn(X, dm, 4096)
+Mdm.save("dm")
+
+zs_t = np.array(F_m(np.ravel(X_test), np.ravel(Y_test)))
+Z_t = zs_t.reshape(X_test.shape)
+
+zs = Mdm.v(m_a)
+Z = zs.reshape(X_test.shape)
+
 # plot
-fig, ax = plt.subplots()
-ax.set_xlabel("x")
-ax.set_ylabel("y'")
-ax.set_title("first derivative")
-ax.plot(X_test, Y_test, label = "prediction")
-ax.plot(X_test, Y_t, label = "actrual")
-plt.legend(loc='best')
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+surf = ax.plot_surface(X_test, Y_test, Z, label = "prediction")
+surf._facecolors2d=surf._facecolors3d
+surf._edgecolors2d=surf._edgecolors3d
+surf = ax.plot_surface(X_test, Y_test, Z_t, label = "actrual")
+surf._facecolors2d=surf._facecolors3d
+surf._edgecolors2d=surf._edgecolors3d
+ax.set_title("dF/dm")
+ax.set_xlabel('m')
+ax.set_ylabel('a')
+ax.set_zlabel('F_m')
+ax.legend()
 
-dxx = Mdx.d(X)
-Mdxx = Machine((1), nodes = 512, lr = 0.04)
-Mdxx.learn(X, dxx, 512)
-Mdxx.save("2")
+Mda = Machine((2), nodes = 1024, lr = 0.00001)
+Mda.learn(X, da, 4096)
+Mda.save("da")
 
-Y_test = Mdxx.v(X_test)
-Y_t = [2 for x in X_test]
+zs_t = np.array(F_a(np.ravel(X_test), np.ravel(Y_test)))
+Z_t = zs_t.reshape(X_test.shape)
+
+zs = Mda.v(m_a)
+Z = zs.reshape(X_test.shape)
+
 # plot
-fig, ax = plt.subplots()
-ax.set_xlabel("x")
-ax.set_ylabel("y''")
-ax.set_title("second derivative")
-ax.plot(X_test, Y_test, label = "prediction")
-ax.plot(X_test, Y_t, label = "actrual")
-plt.legend(loc='best')
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+surf = ax.plot_surface(X_test, Y_test, Z, label = "prediction")
+surf._facecolors2d=surf._facecolors3d
+surf._edgecolors2d=surf._edgecolors3d
+surf = ax.plot_surface(X_test, Y_test, Z_t, label = "actrual")
+surf._facecolors2d=surf._facecolors3d
+surf._edgecolors2d=surf._edgecolors3d
+ax.set_title("dF/da")
+ax.set_xlabel('m')
+ax.set_ylabel('a')
+ax.set_zlabel('F_a')
+ax.legend()
 
-dxxx = Mdxx.d(X)
-Mdxxx = Machine((1), nodes = 512, lr = 0.04)
-Mdxxx.learn(X, dxxx, 512)
-Mdxxx.save("0")
-
-Y_test = Mdxxx.v(X_test)
-Y_t = [0 for x in X_test]
-# plot
-fig, ax = plt.subplots()
-ax.set_xlabel("x")
-ax.set_ylabel("y'''")
-ax.set_title("third derivative")
-ax.plot(X_test, Y_test, label = "prediction")
-ax.plot(X_test, Y_t, label = "actrual")
-plt.legend(loc='best')
 plt.show()
-
-X0 = list(range(3, 3 + 5))
-print(M.v(X0), M.d(X0), Mdx.d(X0), Mdxx.d(X0))
+'''
+X0 = [[x] for x in range(3, 3 + 5)]
+print(M.v(X0), M.d(X0)[0], Mdx.d(X0)[0], Mdxx.d(X0)[0], sep = '\n')
+'''
