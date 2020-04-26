@@ -23,7 +23,7 @@ X = np.array([(x, y) for x in xs for y in ys])
 Mdm = Machine(model='dm')
 
 dmm, dma = Mdm.d(X)
-
+'''
 Mdmm = Machine((2), nodes = 8, lr = 0.1)
 Mdmm.learn(X, dmm, 2048)
 Mdmm.save("dmm")
@@ -49,6 +49,64 @@ ax.set_ylabel('a')
 ax.set_zlabel('F_mm')
 ax.legend()
 
+
+
+Mdma = Machine((2), nodes = 8, lr = 0.1)
+Mdma.learn(X, dma, 2048)
+Mdmm.save("dma")
+
+zs = Mdma.v(m_a)
+Z = zs.reshape(X_test.shape)
+
+zs_t = np.array([0.0] * (len(X_test) * len(X_test[0])))
+Z_t = zs_t.reshape(X_test.shape)
+
+# plot
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+surf = ax.plot_surface(X_test, Y_test, Z, label = "prediction")
+surf._facecolors2d=surf._facecolors3d
+surf._edgecolors2d=surf._edgecolors3d
+surf = ax.plot_surface(X_test, Y_test, Z_t, label = "actual")
+surf._facecolors2d=surf._facecolors3d
+surf._edgecolors2d=surf._edgecolors3d
+ax.set_title("ddF/dmda")
+ax.set_xlabel('m')
+ax.set_ylabel('a')
+ax.set_zlabel('F_ma')
+ax.legend()
+
+
+
+Mdm = Machine(model='da')
+
+dam, daa = Mda.d(X)
+'''
+Mdaa = Machine((2), nodes = 8, lr = 0.1)
+Mdaa.learn(X, dmm, 2048)
+Mdaa.save("daa")
+
+zs = Mdaa.v(m_a)
+Z = zs.reshape(X_test.shape)
+
+zs_t = np.array([0.0] * (len(X_test) * len(X_test[0])))
+Z_t = zs_t.reshape(X_test.shape)
+
+# plot
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+surf = ax.plot_surface(X_test, Y_test, Z, label = "prediction")
+surf._facecolors2d=surf._facecolors3d
+surf._edgecolors2d=surf._edgecolors3d
+surf = ax.plot_surface(X_test, Y_test, Z_t, label = "actual")
+surf._facecolors2d=surf._facecolors3d
+surf._edgecolors2d=surf._edgecolors3d
+ax.set_title("ddF/dada")
+ax.set_xlabel('m')
+ax.set_ylabel('a')
+ax.set_zlabel('F_aa')
+ax.legend()
+
 plt.show()
 
 M = Machine(model = "ma")
@@ -56,7 +114,6 @@ Mdm = Machine(model = "dm")
 Mda = Machine(model = "da")
 Mdmm = Machine(model = "dmm")
 Mdma = Machine(model = "dma")
-Mdam = Machine(model = "dam")
 Mdaa = Machine(model = "daa")
 
 X0 = np.array([[7.0, 5.0], [7.0, 6.0], [8.0, 5.0], [8.0, 6.0], [7.5, 5.5]])
