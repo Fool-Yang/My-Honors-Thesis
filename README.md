@@ -1,5 +1,4 @@
 # Interpretable Models in ANNs
-(due to large file size, avoid opening the Thesis.pdf in a web browser)
 
 April 26, 2020
 
